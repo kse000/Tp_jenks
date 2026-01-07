@@ -40,5 +40,26 @@ pipeline {
                 }
             }
         }
+
+        stage('Code Quality') {
+            steps {
+                script {
+                    echo 'Vérification du Quality Gate SonarQube...'
+                    timeout(time: 5, unit: 'MINUTES') {
+                        def qualityGate = waitForQualityGate()
+                        if (qualityGate.status != 'OK') {
+                            error "Quality Gate failed: ${qualityGate.status}. Pipeline arrêté."
+                        } else {
+                            echo "Quality Gate passed: ${qualityGate.status}"
+                        }
+                    }
+                }
+            }
+            post {
+                failure {
+                    echo "Quality Gate failed. Vérifiez le rapport SonarQube."
+                }
+            }
+        }
     }
 }
