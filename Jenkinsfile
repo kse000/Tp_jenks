@@ -6,7 +6,7 @@ pipeline {
             steps {
                 script {
                     echo 'Lancement des tests unitaires...'
-                    bat 'gradlew.bat clean test'  // sur Windows
+                    bat 'gradlew.bat clean test'  // sur Windows oui
 
                     echo 'Archivage des résultats des tests unitaires...'
                     junit 'build/test-results/test/*.xml'
