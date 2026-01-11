@@ -14,7 +14,6 @@ pipeline {
                     echo 'Génération des rapports Cucumber...'
                     bat 'gradlew.bat generateCucumberReports'
 
-                    echo 'Publication des rapports Cucumber dans Jenkins...'
                     publishHTML(target: [
                         reportName: 'Cucumber Report',
                         reportDir: 'build/reports/cucumber/cucumber-html-reports',
@@ -30,13 +29,23 @@ pipeline {
         stage('Code Analysis') {
             steps {
                 script {
-                    echo 'Analyse du code avec SonarQube...'
-                    bat 'gradlew.bat sonarqube'
+                    echo 'Analyse du code avec SonarQube....'
+                    // Lier ton serveur Jenkins SonarQubedaa
+                    withSonarQubeEnv('MySonarQubeServer') {
+                        bat 'gradlew.bat sonarqube'
+                    }
                 }
             }
-            post {
-                failure {
-                    echo "Code Analysis failed. Check SonarQube report."
+        }
+
+        stage('Code Quality') {
+            steps {
+                script {
+                    echo 'Vérification du Quality Gate...'
+                    def qg = waitForQualityGate() // bloque jusqu'à ce que SonarQube aitf
+                    if (qg.status != 'OK') {
+                        error "Quality Gate failed: ${qg.status}"
+                    }
                 }
             }
         }
