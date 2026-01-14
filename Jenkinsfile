@@ -51,11 +51,16 @@ pipeline {
 
         stage('Build') {
             steps {
-                script {
-                    echo 'Génération du JAR, documentation et archivage...'
-                    bat 'gradlew.bat jar javadoc archiveBuild'
+                // 1. Génération du fichier Jar
+                bat 'gradlew assemble'
 
-                    echo 'Les fichiers JAR et la documentation ont été archivés dans build/archive.'
+                // 2. Génération de la documentation
+                bat 'gradlew javadoc'
+            }
+            post {
+                success {
+                    // 3. Archivage du fichier Jar et de la documentation
+                    archiveArtifacts artifacts: 'build/libs/*.jar, build/docs/javadoc/**'
                 }
             }
         }
@@ -73,27 +78,26 @@ pipeline {
 
     post {
         success {
-            // Email Notification success
-            mail to: 'yacine054141@gmail.com',
-                    subject: "Success: ${currentBuild.fullDisplayName}",
-                    body: "The build and deploy were successful."
+            // Email Notification
+            mail to: 'ibchht@gmail.com',
+                 subject: "Success: ${currentBuild.fullDisplayName}",
+                 body: "The build and deploy were successful."
 
             // Slack Notification success
             slackSend color: 'good',
-                    channel: 'all-jenks', // CHANGE THIS to your actual channel name
-                    message: "Build Success: ${currentBuild.fullDisplayName} (<${env.BUILD_URL}|Open>)"
+                      channel: 'tous-test-jenkins', // CHANGE THIS to your actual channel name
+                      message: "Build Success: ${currentBuild.fullDisplayName} (<${env.BUILD_URL}|Open>)"
         }
         failure {
-            // Email Notification failuree
-            mail to: 'yacine054141@gmail.com',
-                    subject: "Failed: ${currentBuild.fullDisplayName}",
-                    body: "The pipeline failed in stage: ${env.STAGE_NAME}"
+            // Email Notification
+            mail to: 'ibchht@gmail.com',
+                 subject: "Failed: ${currentBuild.fullDisplayName}",
+                 body: "The pipeline failed in stage: ${env.STAGE_NAME}"
 
-            // Slack Notification failure
+            // Slack Notification failhure
             slackSend color: 'danger',
-                    channel: 'all-jenks', // CHANGE THIS to your actual channel namef
-                    message: "Build Failed: ${currentBuild.fullDisplayName} in stage ${env.STAGE_NAME} (<${env.BUILD_URL}|Open>)"
+                      channel: 'tous-test-jenkins', // CHANGE THIS to your actual channel name
+                      message: "Build Failed: ${currentBuild.fullDisplayName} in stage ${env.STAGE_NAME} (<${env.BUILD_URL}|Open>)"
         }
     }
-
 }
