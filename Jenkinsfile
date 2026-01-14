@@ -91,7 +91,7 @@ pipeline {
 
             // Slack Notification failure
             slackSend color: 'danger',
-                    channel: 'all-jenks', // CHANGE THIS to your actual channel name
+                    channel: 'all-jenks', // CHANGE THIS to your actual channel namef
                     message: "Build Failed: ${currentBuild.fullDisplayName} in stage ${env.STAGE_NAME} (<${env.BUILD_URL}|Open>)"
         }
     }
