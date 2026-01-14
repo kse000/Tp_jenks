@@ -70,4 +70,30 @@ pipeline {
             }
         }
     }
+
+    post {
+        success {
+            // Email Notification success
+            mail to: 'yacine054141@gmail.com',
+                    subject: "Success: ${currentBuild.fullDisplayName}",
+                    body: "The build and deploy were successful."
+
+            // Slack Notification success
+            slackSend color: 'good',
+                    channel: 'all-jenks', // CHANGE THIS to your actual channel name
+                    message: "Build Success: ${currentBuild.fullDisplayName} (<${env.BUILD_URL}|Open>)"
+        }
+        failure {
+            // Email Notification failure
+            mail to: 'yacine054141@gmail.com',
+                    subject: "Failed: ${currentBuild.fullDisplayName}",
+                    body: "The pipeline failed in stage: ${env.STAGE_NAME}"
+
+            // Slack Notification failure
+            slackSend color: 'danger',
+                    channel: 'all-jenks', // CHANGE THIS to your actual channel name
+                    message: "Build Failed: ${currentBuild.fullDisplayName} in stage ${env.STAGE_NAME} (<${env.BUILD_URL}|Open>)"
+        }
+    }
+
 }
