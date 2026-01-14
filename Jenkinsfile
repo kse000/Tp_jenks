@@ -84,7 +84,7 @@ pipeline {
                     message: "Build Success: ${currentBuild.fullDisplayName} (<${env.BUILD_URL}|Open>)"
         }
         failure {
-            // Email Notification failure
+            // Email Notification failuree
             mail to: 'yacine054141@gmail.com',
                     subject: "Failed: ${currentBuild.fullDisplayName}",
                     body: "The pipeline failed in stage: ${env.STAGE_NAME}"
